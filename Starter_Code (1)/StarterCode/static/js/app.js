@@ -1,14 +1,6 @@
 
 const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
 
-// Promise Pending
-const dataPromise = d3.json(url);
-// console.log("Data Promise: ", dataPromise);
-
-// Fetch the JSON data and console log it
-d3.json(url).then(function(data) {
-  // console.log(data);
-});
 
 // So I made a function named it IDname so to use to grab all the ID names from json data file
 // with d3 i selected the ID for the drop downj menu 
@@ -27,12 +19,43 @@ function displayID(){
     }
     var firstsamples = IDname[0];
     charts(firstsamples);
+    metadata(firstsamples);
   });
 }
 
 displayID()
 
+//Call a function when a user changes the selected option of a <select> element:
+// we need do a onchange event
+function optionChanged(firstsamples) {
+  // Fetch new data each time a new sample is selected
+  metadata(firstsamples);
+  charts(firstsamples);
+  
+}
 
+// Demographics Panel 
+function metadata(sampleid) {
+  d3.json(url).then((data) => {
+    var metadata = data.metadata;
+    // Filter the data for the object with the desired sample number
+    var resultArray = metadata.filter(sampleObj => sampleObj.id == sampleid);
+    var result = resultArray[0];
+    // Use d3 to select the panel with id of `#sample-metadata`
+    var PANEL = d3.select("#sample-metadata");
+
+    // Use `.html("") to clear any existing metadata
+    PANEL.html("");
+
+    // Use `Object.entries` to add each key and value pair to the panel
+    //  need to use d3 to append new to h6 HTML heading tag
+    // tags for each key-value in the metadata.
+    Object.entries(result).forEach(([key, value]) => {
+      PANEL.append("h6").text(`${key.toUpperCase()}: ${value}`);
+    });
+
+  });
+}
 
 
 // moving on to making the bubble chart and bar chart
@@ -93,3 +116,4 @@ function charts(sampleid){
   });
 
 }
+
